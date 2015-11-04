@@ -1,6 +1,6 @@
 {
   "name": "gleipnir-publish",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Gleipnir module that manages publishing of messages",
   "main": "src/index.js",
   "scripts": {
