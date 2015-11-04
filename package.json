@@ -6,7 +6,8 @@
   "scripts": {
     "pretest": "npm run lint",
     "lint": "eslint .",
-    "test": "istanbul cover _mocha"
+    "test": "istanbul cover _mocha",
+    "prepublish": "npm prune && npm test"
   },
   "repository": {
     "type": "git",
