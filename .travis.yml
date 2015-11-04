@@ -4,4 +4,7 @@ node_js:
   - '4.2'
   - '0.12'
 after_script:
-  - npm install codeclimate-test-reporter && cat coverage/lcov.info | codeclimate-test-reporter
+  - 'npm install codeclimate-test-reporter && cat coverage/lcov.info | codeclimate-test-reporter'
+env:
+  global:
+    - secure: yjkGlGbeC3wcH1quPAUZ4m1jm5QBc6K/FsSwV5aqzDKW8X9mD9wnTIx723GYj3A9rT4K6nvNTrM1ec4ixKBkof+Jv9DvhcGBL+XvKpmWLhcJnuQzOcKCmG/2v9l+in8UUdcJPRHD4KsqsXcz8n559N68rM8IVCGVBBUEHIWzHuzTDgAXp3nd7cLig5WKshMeQra1rCcGBx9cnJq3/lVNpn0fAvUIXjQp58K+aeN2m2ueCWzx38zOzzF5D9iJnkbipQq7dDSVVw+ePECuhxiOMDS8vBbDtcT0FUC3q2sRiINcNMlC2LyPWGkg7ELFoi6W77JTYwH5rrflg9qdW534LZcY2cUjqmHtO3ekFmCCSF2NVi1CZM1Fqk/M4hcx+HD8BkxPikoFJjFENuo+J+4Ap7MEbcdjtnMW8vaY9ytvwTorjWWu+Vj3qZ1gWqF4Un+kqKC1Pk5oSOFN8ohUPSL8B/7z/9aa0r46M7kmP/5+y2L1Dpz/hopSo8s548JJ8euIcildSBq8ubxw6XRZwGrf+I1lIily0xVQWe+zzNCGCf3rARxUVE8/dXVL9QhxzI4WYy/c2EwIwIV+8pmjE1ENQMalAeD+pFFM1lBPmDa8MdtqpAC/NfenfDtViLLHMtxkQ3C9x1JgKAE5LL/D5ZsSLqXBd8A9gjpUoQsQS6pSNyA=
