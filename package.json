@@ -4,7 +4,9 @@
   "description": "Gleipnir module that manages publishing of messages",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha"
+    "pretest": "npm run lint",
+    "lint": "eslint .",
+    "test": "istanbul cover _mocha"
   },
   "repository": {
     "type": "git",
@@ -26,7 +28,9 @@
   "devDependencies": {
     "eslint": "^1.8.0",
     "eslint-config-vaffel": "^3.0.0",
-    "mocha": "^2.3.3"
+    "istanbul": "^0.4.0",
+    "mocha": "^2.3.3",
+    "sinon": "^1.17.2"
   },
   "dependencies": {
     "lodash.assign": "^3.2.0",

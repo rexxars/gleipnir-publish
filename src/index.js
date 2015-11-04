@@ -12,7 +12,7 @@ var assign = require('lodash.assign');
  */
 function publisher(gleipnir, opts) {
     // Ensure that the passed client has the necessary methods
-    if (!gleipnir.addReadyListener) {
+    if (!gleipnir || typeof gleipnir.addReadyListener !== 'function') {
         throw new TypeError('First argument must be a valid gleipnir client');
     }
 
@@ -100,10 +100,6 @@ function publisher(gleipnir, opts) {
      * @return {void}
      */
     function flushQueue() {
-        if (!isReady) {
-            return;
-        }
-
         var msg;
         while (messageQueue.length) {
             msg = messageQueue.shift();
