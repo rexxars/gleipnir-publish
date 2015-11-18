@@ -108,6 +108,50 @@ describe(pkg.name, function() {
             done();
         });
     });
+
+    it('triggers callback if write succeeds (publish())', function(done) {
+        var publish = sinon.stub();
+        var client = getMockClient({ publish: publish });
+        var publisher = getPublisher(client);
+
+        publish.returns(true);
+        publisher.publish('foo', done);
+    });
+
+    it('triggers callback later if write is buffered (publish())', function(done) {
+        var on = function(type, method) {
+            setImmediate(method);
+        };
+
+        var publish = sinon.stub();
+        var client = getMockClient({ publish: publish, on: on });
+        var publisher = getPublisher(client);
+
+        publish.returns(false);
+        publisher.publish('foo', done);
+    });
+
+    it('triggers callback if write succeeds (sendToQueue())', function(done) {
+        var send = sinon.stub();
+        var client = getMockClient({ sendToQueue: send });
+        var publisher = getPublisher(client);
+
+        send.returns(true);
+        publisher.sendToQueue('q', 'foo', done);
+    });
+
+    it('triggers callback later if write is buffered (sendToQueue())', function(done) {
+        var on = function(type, method) {
+            setImmediate(method);
+        };
+
+        var send = sinon.stub();
+        var client = getMockClient({ sendToQueue: send, on: on });
+        var publisher = getPublisher(client);
+
+        send.returns(false);
+        publisher.sendToQueue('q', 'foo', done);
+    });
 });
 
 function equal(expected) {
@@ -125,7 +169,12 @@ function getMockClient(channel, skipReady) {
 
         // For testing purposes
         triggerReady: function() {
-            ready(channel || {});
+            var chan = channel || {};
+            if (!chan.on) {
+                chan.on = noop;
+            }
+
+            ready(chan);
         }
     };
 

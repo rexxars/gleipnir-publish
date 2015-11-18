@@ -18,6 +18,7 @@ function publisher(gleipnir, opts) {
 
     // Instance options
     var options = opts || {};
+    var writeCallbackQueue = [];
     var messageQueue = [];
     var isReady = false;
     var channel;
@@ -40,58 +41,86 @@ function publisher(gleipnir, opts) {
         channel = chan;
         isReady = true;
 
+        channel.on('drain', triggerWriteCallbacks);
         flushQueue();
     }
 
     /**
      * Publish a message to the defined exchange name
      *
-     * @param  {Buffer} content Content of the message
-     * @param  {Object} msgOpts Optional message-specific options - will be merged with publisher options
+     * @param  {Buffer}   content  Content of the message
+     * @param  {Object}   msgOpts  Optional message-specific options - will be merged with publisher options
+     * @param  {Function} callback Function to call when message has been written to the write buffer
      * @return {void}
      */
-    function publish(content, msgOpts) {
+    function publish(content, msgOpts, callback) {
         if (!isReady) {
             return messageQueue.push({
                 content: content,
-                opts: msgOpts
+                opts: msgOpts,
+                callback: callback
             });
+        }
+
+        if (typeof msgOpts === 'function') {
+            callback = msgOpts;
+            msgOpts = {};
         }
 
         msgOpts = assign({}, options, msgOpts);
 
-        channel.publish(
+        if (channel.publish(
             msgOpts.exchangeName || options.exchangeName,
             msgOpts.routingKey || options.routingKey,
             Buffer.isBuffer(content) ? content : new Buffer(content),
             omit(msgOpts, ['exchangeName', 'routingKey'])
-        );
+        )) {
+            // Written to buffer, return
+            return callback && setImmediate(callback);
+        }
+
+        if (callback) {
+            writeCallbackQueue.push(callback);
+        }
     }
 
     /**
      * Send a message directly to a queue
      *
-     * @param  {String} queue   Queue to send message to
-     * @param  {Buffer} content Content of the message
-     * @param  {Object} msgOpts Optional message-specific options - will be merged with publisher options
+     * @param  {String}   queue    Queue to send message to
+     * @param  {Buffer}   content  Content of the message
+     * @param  {Object}   msgOpts  Optional message-specific options - will be merged with publisher options
+     * @param  {Function} callback Function to call when message has been written to the write buffer
      * @return {void}
      */
-    function sendToQueue(queue, content, msgOpts) {
+    function sendToQueue(queue, content, msgOpts, callback) {
         if (!isReady) {
             return messageQueue.push({
                 content: content,
                 opts: msgOpts,
-                queue: queue
+                queue: queue,
+                callback: callback
             });
+        }
+
+        if (typeof msgOpts === 'function') {
+            callback = msgOpts;
+            msgOpts = {};
         }
 
         msgOpts = assign({}, options, msgOpts);
 
-        channel.sendToQueue(
+        if (channel.sendToQueue(
             queue,
             Buffer.isBuffer(content) ? content : new Buffer(content),
             omit(msgOpts, ['exchangeName', 'routingKey'])
-        );
+        )) {
+            return callback && setImmediate(callback);
+        }
+
+        if (callback) {
+            writeCallbackQueue.push(callback);
+        }
     }
 
     /**
@@ -105,10 +134,21 @@ function publisher(gleipnir, opts) {
             msg = messageQueue.shift();
 
             if (msg.queue) {
-                sendToQueue(msg.queue, msg.content, msg.opts);
+                sendToQueue(msg.queue, msg.content, msg.opts, msg.callback);
             } else {
-                publish(msg.content, msg.opts);
+                publish(msg.content, msg.opts, msg.callback);
             }
+        }
+    }
+
+    /**
+     * Trigger all the queued write callbacks
+     *
+     * @return {void}
+     */
+    function triggerWriteCallbacks() {
+        while (writeCallbackQueue.length) {
+            writeCallbackQueue.shift()();
         }
     }
 }
