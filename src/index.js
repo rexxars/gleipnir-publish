@@ -82,6 +82,8 @@ function publisher(gleipnir, opts) {
         if (callback) {
             writeCallbackQueue.push(callback);
         }
+
+        return null;
     }
 
     /**
@@ -121,6 +123,8 @@ function publisher(gleipnir, opts) {
         if (callback) {
             writeCallbackQueue.push(callback);
         }
+
+        return null;
     }
 
     /**
