@@ -27,14 +27,14 @@
   },
   "homepage": "https://github.com/rexxars/gleipnir-publish#readme",
   "devDependencies": {
-    "eslint": "^1.8.0",
-    "eslint-config-vaffel": "^3.0.0",
+    "eslint": "^3.19.0",
+    "eslint-config-vaffel": "^5.0.0",
     "istanbul": "^0.4.0",
-    "mocha": "^2.3.3",
-    "sinon": "^1.17.2"
+    "mocha": "^3.4.1",
+    "sinon": "^2.2.0"
   },
   "dependencies": {
-    "lodash.assign": "^3.2.0",
-    "lodash.omit": "^3.1.0"
+    "lodash.assign": "^4.2.0",
+    "lodash.omit": "^4.5.0"
   }
 }
